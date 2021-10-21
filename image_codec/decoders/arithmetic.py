@@ -2,7 +2,6 @@ from ..probability_model import ProbabilityModel
 
 
 class ArithmeticDecoder:
-
     def __init__(self, bitstream):
         self.bitstream = bitstream
         self.bitstream.byte_align()
@@ -12,7 +11,9 @@ class ArithmeticDecoder:
 
     def decode_bit(self, probability_model: ProbabilityModel) -> int:
         bit: int = probability_model.mps()
-        lps: int = ProbabilityModel.LPS_TABLE[probability_model.state()][(self.range >> 6) - 4]
+        lps: int = ProbabilityModel.LPS_TABLE[probability_model.state()][
+            (self.range >> 6) - 4
+        ]
 
         self.range -= lps
         scaled_range: int = self.range << 7
@@ -37,7 +38,7 @@ class ArithmeticDecoder:
             self.bits_needed += n_bits
 
             if self.bits_needed >= 0:
-                self.bit_pattern += (self.bitstream.read_bits(8) << self.bits_needed)
+                self.bit_pattern += self.bitstream.read_bits(8) << self.bits_needed
                 self.bits_needed -= 8
 
             probability_model.update_lps()
@@ -72,7 +73,9 @@ class ArithmeticDecoder:
 
         while n_bits > 8:
             self.bit_pattern <<= 8
-            self.bit_pattern += int(self.bitstream.read_bits(8) << (8 + self.bits_needed))
+            self.bit_pattern += int(
+                self.bitstream.read_bits(8) << (8 + self.bits_needed)
+            )
             scaled_range: int = self.range << 15
             for i in range(8):
                 value += value
@@ -104,6 +107,8 @@ class ArithmeticDecoder:
     def terminate(self):
         self.range -= 2
         scaled_range: int = self.range << 7
-        
+
         if self.bit_pattern < scaled_range:
-            raise Exception('Arithmetic codeword not correctly terminated at end of frame')
+            raise Exception(
+                "Arithmetic codeword not correctly terminated at end of frame"
+            )

@@ -4,7 +4,6 @@ from .probability_model import ProbabilityModel
 
 
 class ContextModeler:
-
     def __init__(self, block_size: int):
         self.probability_signal_flag = None
         self.probability_gt1_flag = None
@@ -28,9 +27,15 @@ class ContextModeler:
         else:
             probability_model_index = 2
 
-        self.probability_signal_flag = self.probability_models_signal_flag[probability_model_index]
-        self.probability_gt1_flag = self.probability_models_gt1_flag[probability_model_index]
-        self.probability_level_prefix = self.probability_models_level_prefix[probability_model_index]
+        self.probability_signal_flag = self.probability_models_signal_flag[
+            probability_model_index
+        ]
+        self.probability_gt1_flag = self.probability_models_gt1_flag[
+            probability_model_index
+        ]
+        self.probability_level_prefix = self.probability_models_level_prefix[
+            probability_model_index
+        ]
 
     @staticmethod
     def init_probability_models(n_probability_models):

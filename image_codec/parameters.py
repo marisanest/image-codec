@@ -21,7 +21,9 @@ class PredictionModeParameters(Parameters):
 @dataclass
 class PartitioningModeParameters(Parameters):
     partitioning_mode: PartitioningMode = None
-    prediction_mode_parameters_list: List[PredictionModeParameters] = field(default_factory=list)
+    prediction_mode_parameters_list: List[PredictionModeParameters] = field(
+        default_factory=list
+    )
 
     def merge(self, prediction_mode_parameters: PredictionModeParameters):
         self.cost += prediction_mode_parameters.cost
@@ -35,7 +37,9 @@ class ParametersList:
     def append(self, parameters: Parameters):
         self.parameters_list.append(parameters)
 
-    def optimal(self) -> Union[Parameters, PredictionModeParameters, PartitioningModeParameters]:
+    def optimal(
+        self,
+    ) -> Union[Parameters, PredictionModeParameters, PartitioningModeParameters]:
         return min(self.parameters_list, key=lambda parameters: parameters.cost)
 
     def __len__(self):
@@ -50,19 +54,25 @@ class MetaParameters:
     N_BITS_BLOCK_SIZE = 16
     N_BITS_QUALITY_PARAMETER = 8
 
-    def __init__(self, height: int, width: int, block_size: int, quality_parameter: int):
+    def __init__(
+        self, height: int, width: int, block_size: int, quality_parameter: int
+    ):
         self.height = height
         self.width = width
         self.block_size = block_size
         self.quality_parameter = quality_parameter
         self.quantization_step_size: float = 2 ** (self.quality_parameter / 4)
-        self.lagrange_multiplier: float = self.quantization_step_size * self.quantization_step_size
+        self.lagrange_multiplier: float = (
+            self.quantization_step_size * self.quantization_step_size
+        )
 
     def encode(self, output_bitstream: OutputBitstream):
         output_bitstream.write_bits(self.height, self.N_BITS_HEIGHT)
         output_bitstream.write_bits(self.width, self.N_BITS_WIDTH)
         output_bitstream.write_bits(self.block_size, self.N_BITS_BLOCK_SIZE)
-        output_bitstream.write_bits(self.quality_parameter, self.N_BITS_QUALITY_PARAMETER)
+        output_bitstream.write_bits(
+            self.quality_parameter, self.N_BITS_QUALITY_PARAMETER
+        )
 
     @classmethod
     def decode(cls, input_bitstream: InputBitstream):
@@ -70,5 +80,5 @@ class MetaParameters:
             height=input_bitstream.read_bits(cls.N_BITS_HEIGHT),
             width=input_bitstream.read_bits(cls.N_BITS_WIDTH),
             block_size=input_bitstream.read_bits(cls.N_BITS_BLOCK_SIZE),
-            quality_parameter=input_bitstream.read_bits(cls.N_BITS_QUALITY_PARAMETER)
+            quality_parameter=input_bitstream.read_bits(cls.N_BITS_QUALITY_PARAMETER),
         )

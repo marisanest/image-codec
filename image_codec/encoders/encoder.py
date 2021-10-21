@@ -6,16 +6,26 @@ from ..block import Block
 from .entropy import EntropyEncoder
 from ..frame import Frame
 from ..modes import PartitioningMode, PredictionMode
-from ..parameters import PredictionModeParameters, PartitioningModeParameters, ParametersList, MetaParameters
+from ..parameters import (
+    PredictionModeParameters,
+    PartitioningModeParameters,
+    ParametersList,
+    MetaParameters,
+)
 from ..predictor import Predictor
 from ..transformer import Transformer
 
 
 class Encoder:
-
     @classmethod
-    def encode(cls, input_path: str, output_path: str, block_size: int, quality_parameter: int,
-               reconstruction_path: str = None):
+    def encode(
+        cls,
+        input_path: str,
+        output_path: str,
+        block_size: int,
+        quality_parameter: int,
+        reconstruction_path: str = None,
+    ):
         output_bitstream = OutputBitstream(output_path)
         frame = Frame.load(input_path, block_size)
 
@@ -31,8 +41,7 @@ class Encoder:
         transformer = Transformer(meta_parameters.block_size)
 
         reconstructed_frame = Frame(
-            np.zeros((frame.height, frame.width), dtype=np.uint8),
-            block_size
+            np.zeros((frame.height, frame.width), dtype=np.uint8), block_size
         )
 
         predictor = Predictor(reconstructed_frame)
@@ -46,7 +55,7 @@ class Encoder:
                     transformer,
                     reconstructed_frame,
                     predictor,
-                    entropy_encoder
+                    entropy_encoder,
                 )
             )
 
@@ -57,19 +66,39 @@ class Encoder:
             frame.save(reconstruction_path)
 
     @staticmethod
-    def optimal_parameters(block: Block, meta_parameters: MetaParameters, transformer: Transformer,
-                           reconstructed_frame: Frame, predictor: Predictor, entropy_encoder: EntropyEncoder):
+    def optimal_parameters(
+        block: Block,
+        meta_parameters: MetaParameters,
+        transformer: Transformer,
+        reconstructed_frame: Frame,
+        predictor: Predictor,
+        entropy_encoder: EntropyEncoder,
+    ):
         partitioning_modes_parameters = ParametersList()
         for partitioning_mode in PartitioningMode:
-            partitioning_mode_parameters = PartitioningModeParameters(0, partitioning_mode)
+            partitioning_mode_parameters = PartitioningModeParameters(
+                0, partitioning_mode
+            )
             for index, partition in enumerate(block.partitions(partitioning_mode)):
                 prediction_modes_parameters = ParametersList()
                 for prediction_mode in PredictionMode:
-                    partition.encode(prediction_mode, predictor, meta_parameters.quantization_step_size, transformer)
-                    partition.estimate_bit_rate(
-                        partitioning_mode, prediction_mode, entropy_encoder, is_first_partition=index == 0
+                    partition.encode(
+                        prediction_mode,
+                        predictor,
+                        meta_parameters.quantization_step_size,
+                        transformer,
                     )
-                    cost = partition.distortion() + meta_parameters.lagrange_multiplier * partition.bit_rate_estimation
+                    partition.estimate_bit_rate(
+                        partitioning_mode,
+                        prediction_mode,
+                        entropy_encoder,
+                        is_first_partition=index == 0,
+                    )
+                    cost = (
+                        partition.distortion()
+                        + meta_parameters.lagrange_multiplier
+                        * partition.bit_rate_estimation
+                    )
 
                     prediction_modes_parameters.append(
                         PredictionModeParameters(
@@ -78,16 +107,24 @@ class Encoder:
                             partition.copy(),
                         )
                     )
-                optimal_prediction_mode_parameters = prediction_modes_parameters.optimal()
+                optimal_prediction_mode_parameters = (
+                    prediction_modes_parameters.optimal()
+                )
                 partitioning_mode_parameters.merge(optimal_prediction_mode_parameters)
-                reconstructed_frame.update(optimal_prediction_mode_parameters.block, use_reconstruction=True)
+                reconstructed_frame.update(
+                    optimal_prediction_mode_parameters.block, use_reconstruction=True
+                )
 
             partitioning_modes_parameters.append(partitioning_mode_parameters)
             reconstructed_frame.reset(block)
 
         optimal_partitioning_modes_parameters = partitioning_modes_parameters.optimal()
 
-        for prediction_mode_parameters in optimal_partitioning_modes_parameters.prediction_mode_parameters_list:
-            reconstructed_frame.update(prediction_mode_parameters.block, use_reconstruction=True)
+        for (
+            prediction_mode_parameters
+        ) in optimal_partitioning_modes_parameters.prediction_mode_parameters_list:
+            reconstructed_frame.update(
+                prediction_mode_parameters.block, use_reconstruction=True
+            )
 
         return optimal_partitioning_modes_parameters

@@ -1,5 +1,7 @@
 import numpy as np
 
+from typing import List
+
 from .probability_model import ProbabilityModel
 
 
@@ -8,7 +10,7 @@ class ContextModeler:
         self.probability_signal_flag = None
         self.probability_gt1_flag = None
         self.probability_level_prefix = None
-        self.probability_codeblock_flag = ProbabilityModel()
+        self.probability_coded_block_flag = ProbabilityModel()
         self.probability_last_prefix = ProbabilityModel()
         self.prediction_mode_bit1 = ProbabilityModel()
         self.prediction_mode_bit2 = ProbabilityModel()
@@ -19,7 +21,7 @@ class ContextModeler:
         self.probability_models_level_prefix = self.init_probability_models(3)
         self.diagonal_map = self.generate_diagonal_map(block_size)
 
-    def switch_context(self, index):
+    def switch_context(self, index: int):
         if self.diagonal_map[index] < 4:
             probability_model_index = 0
         elif self.diagonal_map[index] < 7:
@@ -38,14 +40,14 @@ class ContextModeler:
         ]
 
     @staticmethod
-    def init_probability_models(n_probability_models):
+    def init_probability_models(n_probability_models: int) -> List[ProbabilityModel]:
         models = []
         for _ in range(n_probability_models):
             models.append(ProbabilityModel())
         return models
 
     @staticmethod
-    def generate_diagonal_map(block_size):
+    def generate_diagonal_map(block_size: int) -> np.array:
         diagonal_map = []
         rows, columns = block_size, block_size
 

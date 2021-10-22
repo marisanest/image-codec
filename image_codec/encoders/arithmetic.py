@@ -5,7 +5,7 @@ from ..probability_model import ProbabilityModel
 class ArithmeticEncoder:
     def __init__(self, output_bitstream: OutputBitstream):
         self.output_bitstream = output_bitstream
-        self.output_bitstream.byte_align()
+        self.output_bitstream.align_byte()
         self.low: int = 0
         self.range: int = 510
         self.buffered_byte: int = 255
@@ -19,7 +19,7 @@ class ArithmeticEncoder:
         self.range -= lps
 
         if bit != probability_model.mps():
-            n_bits: int = ProbabilityModel.RENORM_TABLE[lps >> 3]
+            n_bits: int = ProbabilityModel.RE_NORM_TABLE[lps >> 3]
             self.low = (self.low + self.range) << n_bits
             self.range = lps << n_bits
             self.bits_left -= n_bits
@@ -110,4 +110,4 @@ class ArithmeticEncoder:
 
         self.output_bitstream.write_bits(self.low >> 8, 24 - self.bits_left)
         self.output_bitstream.write_bit(1)
-        self.output_bitstream.byte_align()
+        self.output_bitstream.align_byte()

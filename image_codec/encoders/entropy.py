@@ -27,7 +27,7 @@ class EntropyEncoder:
 
         coded_block_flag = np.any(q_indexes_block != 0)
         self.arithmetic_encoder.encode_bit(
-            coded_block_flag, self.context_modeler.probability_codeblock_flag
+            coded_block_flag, self.context_modeler.probability_coded_block_flag
         )
         if not coded_block_flag:
             return
@@ -182,7 +182,7 @@ class EntropyEncoder:
 
         coded_block_flag = np.any(q_indexes != 0)
         self.estimated_bits += (
-            self.context_modeler.probability_codeblock_flag.estimate_bits(
+            self.context_modeler.probability_coded_block_flag.estimate_bits(
                 coded_block_flag
             )
         )
@@ -238,13 +238,13 @@ class EntropyEncoder:
     def exp_golomb_prob_adapted(self, value: int, prob, estimation=False):
         assert value >= 0
 
-        class_index = count_bits(value + 1) - 1  # class index
+        class_index = count_bits(value + 1) - 1
 
         if not estimation:
             self.arithmetic_encoder.encode_bits(1, class_index + 1, prob)
             self.arithmetic_encoder.encode_bits_bypass(value + 1, class_index)
         else:
-            self.estimated_bits += class_index  # suffix part (bypass coded)
+            self.estimated_bits += class_index
             while class_index > 0:
                 class_index -= 1
                 self.estimated_bits += prob.estimate_bits(0)
@@ -252,4 +252,3 @@ class EntropyEncoder:
 
     def terminate(self):
         self.arithmetic_encoder.terminate()
-        return True

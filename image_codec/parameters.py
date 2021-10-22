@@ -1,9 +1,12 @@
+import numpy as np
+
 from dataclasses import dataclass, field
 from typing import List, Union
 
 from .bitstreams.input import InputBitstream
 from .bitstreams.output import OutputBitstream
 from .block import Block
+from .frame import Frame
 from .modes import PredictionMode, PartitioningMode
 
 
@@ -42,7 +45,7 @@ class ParametersList:
     ) -> Union[Parameters, PredictionModeParameters, PartitioningModeParameters]:
         return min(self.parameters_list, key=lambda parameters: parameters.cost)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.parameters_list)
 
 
@@ -75,10 +78,15 @@ class MetaParameters:
         )
 
     @classmethod
-    def decode(cls, input_bitstream: InputBitstream):
+    def decode(cls, input_bitstream: InputBitstream) -> 'parameters.MetaParameters':
         return cls(
             height=input_bitstream.read_bits(cls.N_BITS_HEIGHT),
             width=input_bitstream.read_bits(cls.N_BITS_WIDTH),
             block_size=input_bitstream.read_bits(cls.N_BITS_BLOCK_SIZE),
             quality_parameter=input_bitstream.read_bits(cls.N_BITS_QUALITY_PARAMETER),
+        )
+
+    def build_frame(self) -> Frame:
+        return Frame(
+            np.zeros([self.height, self.width], dtype=np.uint8), self.block_size
         )

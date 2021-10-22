@@ -35,7 +35,7 @@ def main():
     parser.add_argument(
         "-qp",
         "--quality-parameter",
-        help="quality parameter of the encoder (effects to the quantization step size). range [0;31] (default: 12).",
+        help="quality parameter of the encoder (also know as quantization step size). range [0;31] (default: 12).",
         default=12,
         choices=(range(0, 32)),
         dest="quality_parameter",
@@ -55,13 +55,14 @@ def main():
     start_time = time.process_time()
 
     print("Encoding...")
-    Encoder(
+    encoder = Encoder(
         args.input_path,
         args.output_path,
         args.block_size,
         args.quality_parameter,
         args.reconstruction_path,
-    ).encode()
+    )
+    encoder.encode()
 
     print(
         f"Finished encoding process in {(time.process_time() - start_time) * 1000} ms."

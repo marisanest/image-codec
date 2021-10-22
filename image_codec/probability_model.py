@@ -67,7 +67,7 @@ class ProbabilityModel:
         [2, 2, 2, 2],
     ]
 
-    RENORM_TABLE = [
+    RE_NORM_TABLE = [
         6,
         5,
         4,

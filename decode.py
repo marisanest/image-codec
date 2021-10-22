@@ -29,7 +29,8 @@ def main():
     start_time = time.process_time()
 
     print("Decoding...")
-    Decoder(args.input_path, args.output_path).decode()
+    decoder = Decoder(args.input_path, args.output_path)
+    decoder.decode()
 
     print(
         f"Finished decoding process in {(time.process_time() - start_time) * 1000} ms."

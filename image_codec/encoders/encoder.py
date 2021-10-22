@@ -1,4 +1,3 @@
-import numpy as np
 from tqdm import tqdm
 
 from ..bitstreams.output import OutputBitstream
@@ -17,63 +16,48 @@ from ..transformer import Transformer
 
 
 class Encoder:
-    @classmethod
-    def encode(
-        cls,
+    def __init__(
+        self,
         input_path: str,
         output_path: str,
         block_size: int,
         quality_parameter: int,
         reconstruction_path: str = None,
     ):
-        output_bitstream = OutputBitstream(output_path)
-        frame = Frame.load(input_path, block_size)
-
-        meta_parameters = MetaParameters(
-            height=frame.height,
-            width=frame.width,
+        self.output_bitstream = OutputBitstream(output_path)
+        self.frame = Frame.load(input_path, block_size)
+        self.meta_parameters = MetaParameters(
+            height=self.frame.height,
+            width=self.frame.width,
             block_size=block_size,
             quality_parameter=quality_parameter,
         )
-
-        meta_parameters.encode()
-
-        transformer = Transformer(meta_parameters.block_size)
-
-        reconstructed_frame = Frame(
-            np.zeros((frame.height, frame.width), dtype=np.uint8), block_size
+        self.reconstructed_frame = self.meta_parameters.build_frame()
+        self.reconstruction_path = reconstruction_path
+        self.transformer = Transformer(self.meta_parameters.block_size)
+        self.predictor = Predictor(self.reconstructed_frame)
+        self.entropy_encoder = EntropyEncoder(
+            self.output_bitstream, self.meta_parameters.block_size
         )
 
-        predictor = Predictor(reconstructed_frame)
-        entropy_encoder = EntropyEncoder(output_bitstream, block_size)
+    def encode(self):
+        self.meta_parameters.encode(self.output_bitstream)
 
-        for block in tqdm(frame.blocks()):
-            entropy_encoder.encode_block(
-                cls.optimal_parameters(
-                    block,
-                    meta_parameters,
-                    transformer,
-                    reconstructed_frame,
-                    predictor,
-                    entropy_encoder,
-                )
-            )
+        for block in tqdm(self.frame.blocks()):
+            self.entropy_encoder.encode_block(self.find_optimal_parameters(block))
 
-        entropy_encoder.terminate()
-        output_bitstream.terminate()
+        self.terminate()
+        self.save()
 
-        if reconstruction_path:
-            frame.save(reconstruction_path)
+    def terminate(self):
+        self.entropy_encoder.terminate()
+        self.output_bitstream.terminate()
 
-    @staticmethod
-    def optimal_parameters(
-        block: Block,
-        meta_parameters: MetaParameters,
-        transformer: Transformer,
-        reconstructed_frame: Frame,
-        predictor: Predictor,
-        entropy_encoder: EntropyEncoder,
-    ):
+    def save(self):
+        if self.reconstruction_path:
+            self.reconstructed_frame.save(self.reconstruction_path)
+
+    def find_optimal_parameters(self, block: Block) -> PartitioningModeParameters:
         partitioning_modes_parameters = ParametersList()
         for partitioning_mode in PartitioningMode:
             partitioning_mode_parameters = PartitioningModeParameters(
@@ -84,19 +68,19 @@ class Encoder:
                 for prediction_mode in PredictionMode:
                     partition.encode(
                         prediction_mode,
-                        predictor,
-                        meta_parameters.quantization_step_size,
-                        transformer,
+                        self.predictor,
+                        self.meta_parameters.quantization_step_size,
+                        self.transformer,
                     )
                     partition.estimate_bit_rate(
                         partitioning_mode,
                         prediction_mode,
-                        entropy_encoder,
+                        self.entropy_encoder,
                         is_first_partition=index == 0,
                     )
                     cost = (
                         partition.distortion()
-                        + meta_parameters.lagrange_multiplier
+                        + self.meta_parameters.lagrange_multiplier
                         * partition.bit_rate_estimation
                     )
 
@@ -111,19 +95,19 @@ class Encoder:
                     prediction_modes_parameters.optimal()
                 )
                 partitioning_mode_parameters.merge(optimal_prediction_mode_parameters)
-                reconstructed_frame.update(
+                self.reconstructed_frame.update(
                     optimal_prediction_mode_parameters.block, use_reconstruction=True
                 )
 
             partitioning_modes_parameters.append(partitioning_mode_parameters)
-            reconstructed_frame.reset(block)
+            self.reconstructed_frame.reset(block)
 
         optimal_partitioning_modes_parameters = partitioning_modes_parameters.optimal()
 
         for (
             prediction_mode_parameters
         ) in optimal_partitioning_modes_parameters.prediction_mode_parameters_list:
-            reconstructed_frame.update(
+            self.reconstructed_frame.update(
                 prediction_mode_parameters.block, use_reconstruction=True
             )
 

@@ -1,10 +1,11 @@
+from ..bitstreams.input import InputBitstream
 from ..probability_model import ProbabilityModel
 
 
 class ArithmeticDecoder:
-    def __init__(self, bitstream):
+    def __init__(self, bitstream: InputBitstream):
         self.bitstream = bitstream
-        self.bitstream.byte_align()
+        self.bitstream.align_byte()
         self.bit_pattern: int = self.bitstream.read_bits(16)
         self.bits_needed: int = -8
         self.range: int = 510
@@ -32,7 +33,7 @@ class ArithmeticDecoder:
             probability_model.update_mps()
         else:
             bit = 1 - bit
-            n_bits: int = ProbabilityModel.RENORM_TABLE[lps >> 3]
+            n_bits: int = ProbabilityModel.RE_NORM_TABLE[lps >> 3]
             self.bit_pattern = (self.bit_pattern - scaled_range) << n_bits
             self.range = lps << n_bits
             self.bits_needed += n_bits
@@ -110,5 +111,5 @@ class ArithmeticDecoder:
 
         if self.bit_pattern < scaled_range:
             raise Exception(
-                "Arithmetic codeword not correctly terminated at end of frame"
+                'Arithmetic codeword not correctly terminated at end of frame'
             )

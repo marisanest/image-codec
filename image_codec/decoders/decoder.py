@@ -1,43 +1,41 @@
-import numpy as np
-
 from ..bitstreams.input import InputBitstream
 from .entropy import EntropyDecoder
-from ..frame import Frame
 from ..parameters import MetaParameters
 from ..predictor import Predictor
 from ..transformer import Transformer
 
 
 class Decoder:
-    @classmethod
-    def decode(cls, input_path: str, output_path: str):
-        input_bitstream = InputBitstream(input_path)
-        meta_parameters = MetaParameters.decode(input_bitstream)
-
-        frame = Frame(
-            np.zeros([meta_parameters.height, meta_parameters.width], dtype=np.uint8),
-            meta_parameters.block_size,
+    def __init__(self, input_path: str, output_path: str):
+        self.input_bitstream = InputBitstream(input_path)
+        self.output_path = output_path
+        self.meta_parameters = MetaParameters.decode(self.input_bitstream)
+        self.decoded_frame = self.meta_parameters.build_frame()
+        self.transformer = Transformer(self.meta_parameters.block_size)
+        self.predictor = Predictor(self.decoded_frame)
+        self.entropy_decoder = EntropyDecoder(
+            self.input_bitstream, self.meta_parameters.block_size
         )
 
-        transformer = Transformer(meta_parameters.block_size)
-        predictor = Predictor(frame)
-        entropy_decoder = EntropyDecoder(input_bitstream, meta_parameters.block_size)
-
-        for block in frame.blocks():
-            for prediction_mode_parameters in entropy_decoder.decode_block(
+    def decode(self):
+        for block in self.decoded_frame.blocks():
+            for parameters in self.entropy_decoder.decode_block(
                 block
             ).prediction_mode_parameters_list:
-                prediction_mode_parameters.block.decode(
-                    prediction_mode_parameters.prediction_mode,
-                    predictor,
-                    meta_parameters.quantization_step_size,
-                    transformer,
+                parameters.block.decode(
+                    parameters.prediction_mode,
+                    self.predictor,
+                    self.meta_parameters.quality_parameter,
+                    self.transformer,
                 )
-                frame.update(prediction_mode_parameters.block, use_reconstruction=True)
+                self.decoded_frame.update(parameters.block, use_reconstruction=True)
 
-        if not entropy_decoder.terminate():
-            raise Exception(
-                "Arithmetic codeword not correctly terminated at end of frame"
-            )
+        self.terminate()
+        self.save()
 
-        frame.save(output_path)
+    def terminate(self):
+        self.entropy_decoder.terminate()
+        self.input_bitstream.terminate()
+
+    def save(self):
+        self.decoded_frame.save(self.output_path)

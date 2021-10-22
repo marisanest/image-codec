@@ -31,7 +31,7 @@ class Transformer:
         return np.asarray(matrix)
 
     def transform_forward(
-        self, block: "blocks.Block", prediction_mode: PredictionMode
+        self, block: 'block.Block', prediction_mode: PredictionMode
     ) -> np.array:
         dst_vii_matrix_key = str(block.block_size)
         dst_vii_matrix = self.dst_vii_matrices[dst_vii_matrix_key]
@@ -44,20 +44,20 @@ class Transformer:
             )
         elif prediction_mode == PredictionMode.DC_PREDICTION:
             return dct(
-                dct(block.prediction_error, axis=0, norm="ortho"), axis=1, norm="ortho"
+                dct(block.prediction_error, axis=0, norm='ortho'), axis=1, norm='ortho'
             )
         elif prediction_mode == PredictionMode.HORIZONTAL_PREDICTION:
             return np.matmul(
-                dct(block.prediction_error, axis=0, norm="ortho"),
+                dct(block.prediction_error, axis=0, norm='ortho'),
                 dst_vii_inverse_matrix,
             )
         else:
             return dct(
-                np.matmul(dst_vii_matrix, block.prediction_error), axis=1, norm="ortho"
+                np.matmul(dst_vii_matrix, block.prediction_error), axis=1, norm='ortho'
             )
 
     def transform_backward(
-        self, block: "blocks.Block", prediction_mode: PredictionMode
+        self, block: 'block.Block', prediction_mode: PredictionMode
     ):
         dst_vii_matrix_key = str(block.block_size)
         dst_vii_matrix = self.dst_vii_matrices[dst_vii_matrix_key]
@@ -69,17 +69,17 @@ class Transformer:
             )
         elif prediction_mode == PredictionMode.DC_PREDICTION:
             rec_residual = idct(
-                idct(block.reconstruction, axis=0, norm="ortho"), axis=1, norm="ortho"
+                idct(block.reconstruction, axis=0, norm='ortho'), axis=1, norm='ortho'
             )
         elif prediction_mode == PredictionMode.HORIZONTAL_PREDICTION:
             rec_residual = np.matmul(
-                idct(block.reconstruction, axis=0, norm="ortho"), dst_vii_matrix
+                idct(block.reconstruction, axis=0, norm='ortho'), dst_vii_matrix
             )
         else:
             rec_residual = idct(
                 np.matmul(dst_vii_inverse_matrix, block.reconstruction),
                 axis=1,
-                norm="ortho",
+                norm='ortho',
             )
 
         return np.rint(rec_residual).astype(int)

@@ -36,7 +36,7 @@ class EntropyDecoder:
         q_indexes_block = np.zeros(block_size * block_size, dtype=np.int32)
 
         if not self.arithmetic_decoder.decode_bit(
-            self.context_modeler.probability_codeblock_flag
+            self.context_modeler.probability_coded_block_flag
         ):
             return q_indexes_block.reshape([block_size, block_size]).reshape(
                 block_size, block_size
@@ -54,7 +54,6 @@ class EntropyDecoder:
         for index in range(last_scan_index - 1, -1, -1):
             q_indexes_block[index] = self.decode_q_index(index)
 
-        # todo
         return q_indexes_block.reshape([block_size, block_size]).reshape(
             block_size, block_size
         )

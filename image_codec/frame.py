@@ -21,7 +21,7 @@ class Frame:
             else 0
         )
         self.padded_data = np.pad(
-            self.data, ((0, self.padding_height), (0, self.padding_width)), 'edge'
+            self.data, ((0, self.padding_height), (0, self.padding_width)), "edge"
         )
 
     def blocks(self) -> List[Block]:
@@ -51,20 +51,20 @@ class Frame:
         return self.padded_data[index]
 
     @staticmethod
-    def load(input_path: str, block_size: int) -> 'frame.Frame':
-        with open(input_path, 'rb') as file:
+    def load(input_path: str, block_size: int) -> "frame.Frame":
+        with open(input_path, "rb") as file:
             header = file.readline()
 
             if header != b"P5\n":
-                raise Exception('Frame: Not an PGM image.')
+                raise Exception("Frame: Not an PGM image.")
 
             size = file.readline()
             max_value = file.readline()
 
             if max_value != b"255\n":
-                raise Exception('Frame: PGM image has unexpected bit depth.')
+                raise Exception("Frame: PGM image has unexpected bit depth.")
 
-            width, height = str(size).split(' ')
+            width, height = str(size).split(" ")
             width = int(width[2:])
             height = int(height[: len(height) - 3])
             data = np.zeros([height, width], dtype=np.uint8)
@@ -73,12 +73,12 @@ class Frame:
                 for xi in range(0, width):
                     byte = file.read(1)
                     if not byte:
-                        raise Exception('Frame: PGM image is corrupted.')
+                        raise Exception("Frame: PGM image is corrupted.")
                     data[yi, xi] = byte[0]
 
             return Frame(data, block_size)
 
     def save(self, output_path: str):
-        with open(output_path, 'wb') as file:
+        with open(output_path, "wb") as file:
             file.write(f"P5\n{self.width} {self.height}\n255\n".encode())
             file.write(self.data.ravel().tobytes())

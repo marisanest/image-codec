@@ -111,5 +111,5 @@ class ArithmeticDecoder:
 
         if self.bit_pattern < scaled_range:
             raise Exception(
-                'Arithmetic codeword not correctly terminated at end of frame'
+                "Arithmetic codeword not correctly terminated at end of frame"
             )

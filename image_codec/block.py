@@ -30,7 +30,7 @@ class Block:
         self.reconstruction = reconstruction
         self.bit_rate_estimation = bit_rate_estimation
 
-    def partitions(self, partitioning_mode: PartitioningMode) -> List['block.Block']:
+    def partitions(self, partitioning_mode: PartitioningMode) -> List["block.Block"]:
         partition_block_size = (
             self.block_size
             if partitioning_mode == PartitioningMode.NON_SUB_PARTITIONING
@@ -51,7 +51,7 @@ class Block:
     def encode(
         self,
         prediction_mode: PredictionMode,
-        prediction_calculator: 'predictor.Predictor',
+        prediction_calculator: "predictor.Predictor",
         quality_parameter: float,
         transformer: Transformer,
         inter: bool = False,
@@ -59,19 +59,19 @@ class Block:
         my: int = None,
     ):
         self.predict(prediction_mode, prediction_calculator, inter, mx, my)
-        self.prediction_error = self.data.astype('int') - self.prediction
+        self.prediction_error = self.data.astype("int") - self.prediction
         transform_coefficients = transformer.transform_forward(self, prediction_mode)
         self.q_indexes = (
             np.sign(transform_coefficients)
             * np.floor((np.abs(transform_coefficients) / quality_parameter) + 0.4)
-        ).astype('int')
+        ).astype("int")
         self.reconstruct(prediction_mode, quality_parameter, transformer)
         self.sort_q_indexes(prediction_mode)
 
     def decode(
         self,
         prediction_mode: PredictionMode,
-        prediction_calculator: 'predictor.Predictor',
+        prediction_calculator: "predictor.Predictor",
         quality_parameter: float,
         transformer: Transformer,
         inter: bool = False,
@@ -85,7 +85,7 @@ class Block:
     def predict(
         self,
         prediction_mode: PredictionMode,
-        prediction_calculator: 'predictor.Predictor',
+        prediction_calculator: "predictor.Predictor",
         inter: bool = False,
         mx: int = None,
         my: int = None,
@@ -105,7 +105,7 @@ class Block:
         self.reconstruction = self.q_indexes * quality_parameter
         self.reconstruction = transformer.transform_backward(self, prediction_mode)
         self.reconstruction += self.prediction
-        self.reconstruction = np.clip(self.reconstruction, 0, 255).astype('uint8')
+        self.reconstruction = np.clip(self.reconstruction, 0, 255).astype("uint8")
 
     def sort_q_indexes(self, prediction_mode: PredictionMode, decode=False):
         if (
@@ -122,14 +122,14 @@ class Block:
 
     def distortion(self) -> np.array:
         return np.sum(
-            np.square(np.subtract(self.data, self.reconstruction, dtype='int'))
+            np.square(np.subtract(self.data, self.reconstruction, dtype="int"))
         )
 
     def estimate_bit_rate(
         self,
         partitioning_mode: PartitioningMode,
         prediction_mode: PredictionMode,
-        entropy_encoder: 'encoders.entropy.EntropyEncoder',
+        entropy_encoder: "encoders.entropy.EntropyEncoder",
         is_first_partition: bool = True,
     ):
         self.bit_rate_estimation = entropy_encoder.estimate_block_bits(
@@ -142,7 +142,7 @@ class Block:
     def shape(self) -> Tuple[int, int]:
         return self.data.shape
 
-    def copy(self) -> 'block.Block':
+    def copy(self) -> "block.Block":
         return Block(
             self.x,
             self.y,

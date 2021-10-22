@@ -58,8 +58,8 @@ class Predictor:
         return np.full([block.block_size, block.block_size], self.left_border(block)).T
 
     def get_planar_prediction(self, block: Block) -> np.ndarray:
-        top_samples = self.top_border(block).astype('int')
-        left_samples = self.left_border(block).astype('int')
+        top_samples = self.top_border(block).astype("int")
+        left_samples = self.left_border(block).astype("int")
 
         virtual_bottom_samples = np.full(
             [block.block_size], left_samples[block.block_size - 1]
@@ -69,7 +69,7 @@ class Predictor:
         )
 
         prediction = np.full(
-            [block.block_size, block.block_size], block.block_size, dtype='int32'
+            [block.block_size, block.block_size], block.block_size, dtype="int32"
         )
 
         for local_x in range(0, block.block_size):

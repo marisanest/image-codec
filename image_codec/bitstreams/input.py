@@ -49,4 +49,4 @@ class InputBitstream(Bitstream):
     @staticmethod
     def _validate_bytes(byte_s: bytes):
         if not byte_s:
-            raise Exception('InputBitstream: Tried to read byte after eof.')
+            raise Exception("InputBitstream: Tried to read byte after eof.")

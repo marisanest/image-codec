@@ -78,7 +78,7 @@ class MetaParameters:
         )
 
     @classmethod
-    def decode(cls, input_bitstream: InputBitstream) -> 'parameters.MetaParameters':
+    def decode(cls, input_bitstream: InputBitstream) -> "parameters.MetaParameters":
         return cls(
             height=input_bitstream.read_bits(cls.N_BITS_HEIGHT),
             width=input_bitstream.read_bits(cls.N_BITS_WIDTH),

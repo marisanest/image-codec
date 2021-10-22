@@ -10,7 +10,7 @@ class OutputBitstream(Bitstream):
         self.bit_counter += 1
 
         if self.bit_counter == 8:
-            self.file.write(self.buffer.to_bytes(1, byteorder='big'))
+            self.file.write(self.buffer.to_bytes(1, byteorder="big"))
             self.buffer = 0
             self.bit_counter = 0
 
@@ -28,12 +28,12 @@ class OutputBitstream(Bitstream):
                 (bit_pattern >> (n_bits - free_bits)) & ((1 << free_bits) - 1)
             )
             n_bits -= free_bits
-            self.file.write(self.buffer.to_bytes(1, byteorder='big'))
+            self.file.write(self.buffer.to_bytes(1, byteorder="big"))
 
         while n_bits >= 8:
             n_bits -= 8
             self.buffer = int(bit_pattern >> n_bits) & 255
-            self.file.write(self.buffer.to_bytes(1, byteorder='big'))
+            self.file.write(self.buffer.to_bytes(1, byteorder="big"))
 
         self.buffer = int(bit_pattern & ((1 << n_bits) - 1))
         self.bit_counter = n_bits

@@ -3,7 +3,7 @@ from .bitstream import Bitstream
 
 class OutputBitstream(Bitstream):
     def __init__(self, output_path: str):
-        super().__init__(output_path)
+        super().__init__(output_path, "+wb")
 
     def write_bit(self, bit: int):
         self.buffer = (self.buffer << 1) | int(bool(bit))

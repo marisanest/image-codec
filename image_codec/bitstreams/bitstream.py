@@ -1,6 +1,6 @@
 class Bitstream:
-    def __init__(self, file_path: str):
-        self.file = open(file_path, "rb")
+    def __init__(self, file_path: str, file_mode: str):
+        self.file = open(file_path, file_mode)
         self.buffer = 0
         self.bit_counter = 0
 

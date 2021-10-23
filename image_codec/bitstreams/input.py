@@ -3,7 +3,7 @@ from .bitstream import Bitstream
 
 class InputBitstream(Bitstream):
     def __init__(self, input_path: str):
-        super().__init__(input_path)
+        super().__init__(input_path, "rb")
 
     def read_bit(self) -> int:
         if self.bit_counter == 0:

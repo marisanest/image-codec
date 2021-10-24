@@ -81,4 +81,4 @@ class Frame:
     def save(self, output_path: str):
         with open(output_path, "wb") as file:
             file.write(f"P5\n{self.width} {self.height}\n255\n".encode())
-            file.write(self.data[:self.height, :self.width].ravel().tobytes())
+            file.write(self.data[: self.height, : self.width].ravel().tobytes())

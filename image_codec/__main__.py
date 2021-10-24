@@ -8,24 +8,37 @@ from image_codec.decoders.decoder import Decoder
 @click.group()
 @click.version_option("1.0.0")
 def main():
-    """A Image Codec CLI to en- and decode images."""
+    """A simple CLI tool to encode and decode PGM images."""
     pass
 
 
 @main.command()
-@click.argument('input-path', required=True, type=click.Path(exists=True))
-@click.argument('output-path', required=True, type=click.Path())
-@click.option("-bs", "--block-size", default=16, show_default=True, type=int, help="Block size of the encoder.")
+@click.argument("input-path", required=True, type=click.Path(exists=True))
+@click.argument("output-path", required=True, type=click.Path())
 @click.option(
-    "-qp", "--quality-parameter", default=12, show_default=True, type=click.IntRange(0, 31),
+    "-bs",
+    "--block-size",
+    default=16,
+    show_default=True,
+    type=int,
+    help="Block size of the encoder.",
+)
+@click.option(
+    "-qp",
+    "--quality-parameter",
+    default=12,
+    show_default=True,
+    type=click.IntRange(0, 31),
     help="Quality parameter of the encoder (same as the quantization step size). [range: 0,31]",
 )
 @click.option(
-    "-r", "--reconstruction-path", type=str,
+    "-r",
+    "--reconstruction-path",
+    type=str,
     help="reconstruction path of the encoder (reconstructed image). If not given, no reconstruction will be saved.",
 )
 def encode(**kwargs):
-    """Encode image."""
+    """Encode a PGM image."""
     print("Start encoding process...")
     start_time = time.process_time()
 
@@ -45,10 +58,10 @@ def encode(**kwargs):
 
 
 @main.command()
-@click.argument('input-path', required=True, type=click.Path(exists=True))
-@click.argument('output-path', required=True, type=click.Path())
+@click.argument("input-path", required=True, type=click.Path(exists=True))
+@click.argument("output-path", required=True, type=click.Path())
 def decode(**kwargs):
-    """Decode image."""
+    """Decode a PGM image."""
     print("Start decoding process...")
     start_time = time.process_time()
 
@@ -61,5 +74,5 @@ def decode(**kwargs):
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

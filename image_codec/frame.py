@@ -20,7 +20,7 @@ class Frame:
             if self.width % self.block_size != 0
             else 0
         )
-        self.padded_data = np.pad(
+        self.data = np.pad(
             self.data, ((0, self.padding_height), (0, self.padding_width)), "edge"
         )
 
@@ -45,10 +45,10 @@ class Frame:
         ] = 0
 
     def __setitem__(self, index: int, data: np.array):
-        self.padded_data[index] = data
+        self.data[index] = data
 
     def __getitem__(self, index: int) -> int:
-        return self.padded_data[index]
+        return self.data[index]
 
     @staticmethod
     def load(input_path: str, block_size: int) -> "frame.Frame":
@@ -81,4 +81,4 @@ class Frame:
     def save(self, output_path: str):
         with open(output_path, "wb") as file:
             file.write(f"P5\n{self.width} {self.height}\n255\n".encode())
-            file.write(self.data.ravel().tobytes())
+            file.write(self.data[:self.height, :self.width].ravel().tobytes())

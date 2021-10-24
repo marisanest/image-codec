@@ -72,19 +72,19 @@ pip install -e .[development]
 
 ## Usage
 
-For simple usage of the `image-codec` run for encoding:
+For simple usage of the `image-codec` for image encoding run:
 ```bash
-image-codec encode <input-path> <output-path>
+> image-codec encode <input-path> <output-path>
 ```
-and for decoding: 
+and for image decoding run: 
 ```bash
-image-codec decode <input-path> <output-path>
+> image-codec decode <input-path> <output-path>
 ```
 
 For further details please run:
 
 ```bash
-image-codec --help
+> image-codec --help
 
 Usage: image-codec [OPTIONS] COMMAND [ARGS]...
 
@@ -101,9 +101,9 @@ Commands:
 
 ## Results
 
-Comparing a classical JPEG codec with this codec using a PSNR (Peak Signal-to-Noise Ratio) measurement, leads to the following quality improvements for an example image:
+Comparing the `image-codec` with a classical JPEG codec using a PSNR (Peak Signal-to-Noise Ratio) measurement, the following quality improvements for an example image can be observed:
 
-![](https://github.com/marisanest/image-codec/test/psnr_test_image.pdf)
+![](https://github.com/marisanest/image-codec/raw/main/test/psnr_test_image.pdf)
 
 ## License
 This library is available under the [MIT License](https://github.com/git/git-scm.com/blob/master/MIT-LICENSE.txt).

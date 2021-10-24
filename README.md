@@ -4,7 +4,15 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-The `image-codec` is a  simple CLI tool to encode and decode PGM images.
+The `image-codec` is a  simple CLI tool to encode and decode PGM images. Following methods are used:
+
+* Variable Block Size Encoding
+* Block-adaptive transform selection using Discrete Sinus Transformation (DST-VII)
+* Rate-distortion optimized quantization
+* Entropy coding
+* Context-based adaptive binary arithmetic coding (CABAC)
+* Optimized encoder control with Lagrange optimization
+* etc.
 
 ## Dependencies
 

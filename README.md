@@ -105,9 +105,9 @@ Comparing the `image-codec` with a classical JPEG codec using a PSNR (Peak Signa
 
 ![](https://github.com/marisanest/image-codec/raw/main/test/psnr_test_image.pdf)
 
-<object data="https://github.com/marisanest/image-codec/raw/main/test/psnr_test_image.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="https://github.com/marisanest/image-codec/raw/main/test/psnr_test_image.pdf">
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://github.com/marisanest/image-codec/raw/main/test/psnr_test_image.pdf">Download PDF</a>.</p>
+<object data="./test/psnr_test_image.pdf" type="application/pdf" width="700px" height="700px">
+    <embed src="./test/psnr_test_image.pdf">
+        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="./test/psnr_test_image.pdf">Download PDF</a>.</p>
     </embed>
 </object>
 

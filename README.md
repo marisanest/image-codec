@@ -103,7 +103,7 @@ Commands:
 
 Comparing the `image-codec` with a classical JPEG codec using a PSNR (Peak Signal-to-Noise Ratio) measurement, the following quality improvements for an example image can be observed:
 
-![](https://github.com/marisanest/image-codec/raw/main/test/psnr_test_image.pdf)
+![](https://github.com/marisanest/image-codec/raw/main/test/psnr_test_image.jpeg)
 
 ## License
 This library is available under the [MIT License](https://github.com/git/git-scm.com/blob/master/MIT-LICENSE.txt).

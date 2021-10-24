@@ -19,32 +19,32 @@ To install the `image-codec` package for production purposes please, follow the 
 If you want to use `git clone` together with `pip`, you can run:
 
 ```bash
-git clone https://github.com/marisanest/image-codec.git
-cd image-codec
+> git clone https://github.com/marisanest/image-codec.git
+> cd image-codec
 ```
 
 Optionally, If you want to install a specific branch, please check out the wanted branch first:
 
 ```bash
-git checkout <branch-name>
+> git checkout <branch-name>
 ```
 
 Then install the package:
 
 ```bash
-pip install .
+> pip install .
 ```
 
 If you want to use `pip` only, you can run:
 
 ```bash
-pip install git+https://github.com/marisanest/image-codec
+> pip install git+https://github.com/marisanest/image-codec
 ```
 
 Optionally, If you want to install a specific branch, please run the following command:
 
 ```bash
-pip install git+https://github.com/marisanest/image-codec@<branch-name>
+> pip install git+https://github.com/marisanest/image-codec@<branch-name>
 ```
 
 ### Development
@@ -54,20 +54,20 @@ To install the `image-codec` package for development purposes please, follow the
 If you want to use `git clone` together with `pip`, you can run:
 
 ```bash
-git clone https://github.com/marisanest/image-codec.git
-cd image-codec
+> git clone https://github.com/marisanest/image-codec.git
+> cd image-codec
 ```
 
 Optionally, If you want to install a specific branch, please check out the wanted branch first:
 
 ```bash
-git checkout <branch-name> 
+> git checkout <branch-name> 
 ```
 
 Then install the package:
 
 ```bash
-pip install -e .[development]
+> pip install -e .[development]
 ```
 
 ## Usage
@@ -101,7 +101,7 @@ Commands:
 
 ## Results
 
-Comparing the `image-codec` with a classical JPEG codec using a PSNR (Peak Signal-to-Noise Ratio) measurement, the following quality improvements for an example image can be observed:
+Comparing the `image-codec` with a classical JPEG codec using PSNR (Peak Signal-to-Noise Ratio) measurement, the following quality improvements for an example image can be observed:
 
 ![](https://github.com/marisanest/image-codec/raw/main/test/psnr_test_image.jpeg)
 
